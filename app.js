@@ -194,4 +194,4 @@ function toggleRumus() {
         // Toggle class 'rotate-arrow' untuk memutar panah kecil ke atas
         arrow.classList.toggle("rotate-arrow");
     }
-}
+} 
