@@ -1,233 +1,338 @@
-/* Reset & Base Styles */ 
-/* Aturan warna default (Mode Terang) */
+/* ====================================================
+   1. VARIABLES & SYSTEM THEME
+   ==================================================== */
 :root {
     --bg-body: #f8fafc;
     --bg-card: #ffffff;
-    --text-main: #1e293b;
+    --text-main: #334155;
     --text-title: #0f172a;
     --text-sub: #64748b;
     --border-color: #e2e8f0;
+    
+    --primary: #4f46e5;
+    --success: #16a34a;
+    --danger: #dc2626;
 }
 
-/* Aturan warna saat Mode Gelap aktif */
 [data-theme="dark"] {
-    --bg-body: #0f172a;      /* Navy Gelap */
-    --bg-card: #1e293b;      /* Slate Grey */
-    --text-main: #f1f5f9;    /* Putih Abu */
-    --text-title: #ffffff;   /* Putih Bersih */
-    --text-sub: #94a3b8;     /* Abu Terang */
-    --border-color: #334155; /* Border Gelap */
+    --bg-body: #0f172a;
+    --bg-card: #1e293b;
+    --text-main: #cbd5e1;
+    --text-title: #ffffff;
+    --text-sub: #94a3b8;
+    --border-color: #334155;
 }
 
-/* Terapkan variabel warna ke elemen-elemen yang sudah ada */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
 body {
     background-color: var(--bg-body);
     color: var(--text-main);
-    transition: background-color 0.3s, color 0.3s; /* Efek transisi halus saat ganti tema */
-}
-.card, .metric {
-    background-color: var(--bg-card) !important;
-    border-color: var(--border-color) !important;
-    transition: background-color 0.3s, border-color 0.3s;
-}
-h1 { color: var(--text-title); }
-.sub { color: var(--text-sub); }
-.card-title, .row-value { color: var(--text-title) !important; }
-.row-label, .section-title { color: var(--text-sub) !important; }
-.input-group input, table input {
-    background-color: var(--bg-body) !important;
-    border-color: var(--border-color) !important;
-    color: var(--text-title) !important;
+    padding: 50px 20px;
+    position: relative;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* Desain tombol switch tema yang estetik */
+/* ====================================================
+   2. REPLACEMENT CLASSES (Pindahan dari HTML Inline)
+   ==================================================== */
+.card-margin-top {
+    margin-top: 24px;
+}
+
+.table-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-title-nomargin {
+    font-size: 16px;
+    color: var(--text-title);
+    margin: 0;
+    font-weight: 700;
+}
+
+.table-responsive-wrapper {
+    overflow-x: auto;
+}
+
+.table-action-col {
+    width: 50px;
+    text-align: center;
+}
+
+.row-item-total {
+    border-top: 2px solid var(--border-color);
+    margin-top: 4px;
+    padding-top: 12px;
+}
+
+.row-value-total {
+    font-size: 16px;
+    color: var(--primary);
+}
+
+.verdict-space-helper {
+    height: 1.5rem;
+}
+
+.bep-info-text {
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-top: 6px;
+}
+
+.verdict-footer {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.verdict-bep-label {
+    font-size: 12px;
+}
+
+/* ====================================================
+   3. STRUKTUR UTAMA UTILS
+   ==================================================== */
 .theme-btn {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    z-index: 1000;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     color: var(--text-main);
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 8px 14px;
+    font-size: 13px;
     font-weight: 600;
     border-radius: 20px;
     cursor: pointer;
-    margin-bottom: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 .theme-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background-color: #f8fafc;
-    color: #1e293b;
-    padding: 2rem 1rem;
-    line-height: 1.5;
 }
 
 .app-header {
-    text-align: center;
-    max-width: 1200px;
-    margin: 0 auto 2rem auto;
+    max-width: 1100px;
+    margin: 0 auto 30px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header-text h1 { font-size: 28px; color: var(--text-title); margin-bottom: 4px; }
+.header-text .sub { font-size: 14px; color: var(--text-sub); }
+.app-logo { width: 75px; height: 75px; object-fit: cover; border-radius: 50%; border: 2px solid var(--primary); }
+
+.app-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.metric {
+    background: var(--bg-card);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.metric-label { font-size: 12px; color: var(--text-sub); font-weight: 500; margin-bottom: 4px; }
+.metric-value { font-size: 18px; font-weight: 700; color: var(--text-title); }
+.metric-value.green { color: var(--success) !important; }
+.metric-value.red { color: var(--danger) !important; }
+.metric-sub { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 24px;
+}
+
+.card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.section-title { font-size: 16px; color: var(--text-title); margin-bottom: 16px; font-weight: 700; }
+
+.input-group { margin-bottom: 12px; }
+.input-group:last-child { margin-bottom: 0; }
+.input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.input-group input, table input {
+    width: 100%; padding: 8px 12px; font-size: 14px;
+    border: 1px solid var(--border-color); border-radius: 6px;
+    background: var(--bg-body); color: var(--text-title); outline: none;
+}
+
+table { width: 100%; border-collapse: collapse; }
+table th { padding: 10px; font-size: 13px; font-weight: 600; text-align: left; border-bottom: 2px solid var(--border-color); }
+table td { padding: 8px; border-bottom: 1px solid var(--border-color); }
+
+.add-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; font-size: 13px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+.del-btn { background: none; border: none; color: var(--danger); font-size: 18px; cursor: pointer; }
+
+.row-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid var(--border-color); }
+.row-label { color: var(--text-sub); }
+.row-value { font-weight: 600; color: var(--text-title); }
+.progress-bar { background: var(--border-color); height: 8px; border-radius: 4px; margin-top: 8px; overflow: hidden; }
+.progress-fill { height: 100%; transition: width 0.3s; }
+
+.verdict-box { padding: 16px; border-radius: 10px; }
+.verdict-green { background: rgba(22, 163, 74, 0.1); color: #16a34a; border: 1px solid #16a34a; }
+.verdict-amber { background: rgba(217, 119, 6, 0.1); color: #d97706; border: 1px solid #d97706; }
+.verdict-red { background: rgba(220, 38, 38, 0.1); color: #dc2626; border: 1px solid #dc2626; }
+.badge { padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; color: white; display: inline-block; }
+.badge-green { background: var(--success); }
+.badge-amber { background: #d97706; }
+.badge-red { background: var(--danger); }
+
+/* RESPONSIVE LAYOUT UNTUK HP */
+@media (max-width: 768px) {
+    body { padding: 20px 10px; }
+    .theme-btn { top: 12px; right: 12px; padding: 6px 10px; font-size: 12px; }
+    .app-header { flex-direction: column; text-align: center; gap: 12px; margin-bottom: 20px; }
+    .grid-container { grid-template-columns: 1fr; gap: 20px; }
+}  
+/* ====================================================
+   5. STYLE UNTUK TOMBOL RUMUS INTERAKTIF
+   ==================================================== */
+.rumus-card {
+    background: rgba(79, 70, 229, 0.02) !important;
+    border: 1px dashed var(--primary) !important;
+    padding: 0 !important; /* Reset padding luar agar rapi saat tertutup */
+    overflow: hidden;
+}
+
+.rumus-toggle-btn {
+    width: 100%;
+    background: transparent;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-title);
+    cursor: pointer;
+    outline: none;
+    transition: background 0.2s;
+}
+
+.rumus-toggle-btn:hover {
+    background: rgba(79, 70, 229, 0.05); /* Efek highlight pas cursor lewat */
+}
+
+/* Konten disembunyikan secara default */
+.rumus-content-collapse {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease;
+    padding: 0 20px; /* Jaga jarak samping */
+}
+
+/* Class aktif yang akan dipicu oleh JavaScript saat di-klik */
+.rumus-content-collapse.show {
+    max-height: 500px; /* Batas tinggi maksimum ketika meluncur ke bawah */
+    padding: 0 20px 20px 20px; /* Beri padding bawah saat terbuka */
+}
+
+#rumus-arrow-icon {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+    color: var(--text-sub);
+}
+
+/* Memutar ikon panah ketika terbuka */
+.rotate-arrow {
+    transform: rotate(180deg);
+    color: var(--primary) !important;
+}
+
+/* Struktur isi dalam grid tetap sama */
+.rumus-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.rumus-item { background: var(--bg-card); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); }
+.rumus-item strong { display: block; font-size: 13px; color: var(--primary); margin-bottom: 4px; }
+.rumus-item p { font-size: 12px; color: var(--text-main); line-height: 1.4; }
+.rumus-item.full-width { grid-column: span 2; }
+
+@media (max-width: 768px) {
+    .rumus-grid { grid-template-columns: 1fr; }
+    .rumus-item.full-width { grid-column: span 1; }
 } 
 
-/* Styling khusus untuk Logo Bisnis */
-.app-logo {
-    width: 130px;          /* Ukuran pas: tidak terlalu besar/kecil */
-    height: 130px;
-    object-fit: cover;     /* Menjaga gambar tidak gepeng */
-    border-radius: 50%;    /* Membuat gambar otomatis berbentuk bulat sempurna */
-    border: 4px solid #ffffff; /* Bingkai putih tebal agar kontras dengan background */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Bayangan halus biar logo terlihat pop-out/timbul */
-    margin-bottom: 15px;   /* Jarak antara logo dengan judul teks bawahnya */
-    background-color: #000; /* Mengisi background hitam jika gambar ada bagian transparannya */
+/* ====================================================
+   6. CODER FOOTER (BY GREYSEN - VIBE CODING)
+   ==================================================== */
+.coder-footer {
+    margin-top: 60px;
+    padding-bottom: 20px;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace; /* Wajib font gaya coding */
 }
 
-/* Tata letak header (Judul di kiri, Logo di kanan) */
-.app-header {
-    display: flex;
-    justify-content: space-between; /* Mendorong teks ke kiri dan logo ke kanan */
-    align-items: center;            /* Menyeimbangkan posisi vertikal biar sejajar tengah */
-    max-width: 1200px;
-    margin: 0 auto 2rem auto;
-    padding: 0 10px;                /* Jarak aman di layar HP */
+.footer-line {
+    width: 40px;
+    height: 2px;
+    background: rgba(148, 163, 184, 0.3); /* Garis pembatas abu-abu tipis */
+    margin: 0 auto 16px auto;
 }
 
-/* Memastikan teks judul rata kiri */
-.header-text {
-    text-align: left;
+.footer-text {
+    font-size: 13px;
+    color: #94a3b8; /* Abu-abu khas teks komentar/keterangan coding */
+    letter-spacing: 0.5px;
 }
 
-/* Styling logo di pojok kanan */
-.app-logo {
-    width: 90px;           /* Ukuran sedikit diperkecil agar pas di pojok kanan */
-    height: 90px;
-    object-fit: cover;
-    border-radius: 50%;    /* Tetap bulat rapi */
-    border: 3px solid #ffffff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-    background-color: #000;
-    flex-shrink: 0;        /* Mencegah logo gepeng/menciut di layar hp */
+/* Beri penekanan tipis pada nama Anda agar terlihat pro */
+.coder-footer .coder-name {
+    color: #64748b;
+    font-weight: 700;
+    transition: color 0.2s ease;
 }
 
-/* Pengaturan responsif untuk layar HP/Smarphone */
-@media (max-width: 480px) {
-    .app-header {
-        flex-direction: column-reverse; /* Di HP, logo otomatis pindah ke atas tengah agar tidak sempit */
-        text-align: center;
-        gap: 15px;
-    }
-    .header-text {
-        text-align: center;
-    }
+/* Efek hover interaktif kalau nama di-sorot cursor */
+.coder-footer:hover .coder-name {
+    color: var(--primary); /* Berubah jadi ungu aksen saat disorot */
 }
 
-h1 { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
-.sub { font-size: 14px; color: #64748b; }
-
-/* Layout Utama */
-.app-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+.coder-footer .code-symbol {
+    color: var(--primary);
+    font-weight: bold;
 }
 
-@media (min-width: 968px) {
-    .app-container { grid-template-columns: 450px 1fr; align-items: start; }
+.footer-subtext {
+    font-size: 10px;
+    color: #cbd5e1;
+    margin-top: 4px;
+    opacity: 0.7;
 }
 
-/* Komponen Card */
-.card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 1.25rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02), 0 4px 12px rgba(0,0,0,0.03);
+/* Penyesuaian warna teks khusus saat website dalam Mode Gelap */
+[data-theme="dark"] .footer-text {
+    color: #64748b;
 }
-.card-title { font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 1.25rem; }
-.card-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-.card-header-flex .card-title { margin-bottom: 0; }
-
-.section-title { font-size: 13px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 1rem; }
-
-/* Input Styling */
-.input-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.input-group { margin-bottom: 1rem; }
-.input-group:last-child { margin-bottom: 0; }
-.input-group label { display: block; font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px; }
-.hint { font-size: 11px; color: #94a3b8; font-weight: 400; }
-
-.input-group input, table input {
-    width: 100%;
-    padding: 8px 12px;
-    font-size: 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    color: #0f172a;
-    background-color: #fff;
-    transition: all 0.2s;
+[data-theme="dark"] .coder-name {
+    color: #94a3b8;
 }
-.input-group input:focus, table input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
-
-/* Wrapper Rp untuk Input Harga */
-.input-wrapper-rp { position: relative; display: flex; align-items: center; }
-.input-wrapper-rp::before { content: "Rp"; position: absolute; left: 12px; font-size: 13px; color: #94a3b8; font-weight: 500; }
-.input-wrapper-rp input { padding-left: 34px; }
-
-/* Tabel Bahan */
-.table-responsive { max-height: 300px; overflow-y: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { text-align: left; font-size: 11px; font-weight: 600; color: #64748b; padding: 8px; border-bottom: 2px solid #f1f5f9; text-transform: uppercase; }
-td { padding: 6px 4px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-tr:last-child td { border-bottom: none; }
-
-/* Tombol-tombol */
-.add-btn { background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; color: #4f46e5; transition: all 0.2s; }
-.add-btn:hover { background: #e0e7ff; }
-.del-btn { background: #fef2f2; border: 1px solid #fee2e2; cursor: pointer; color: #ef4444; font-size: 14px; padding: 4px 8px; border-radius: 6px; transition: all 0.2s; }
-.del-btn:hover { background: #fee2e2; }
-
-/* Dashboard Hasil (Kanan) */
-.grid-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 1.25rem; }
-.metric { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-.metric-label { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
-.metric-value { font-size: 18px; font-weight: 700; color: #0f172a; }
-.metric-sub { font-size: 11px; color: #94a3b8; margin-top: 2px; }
-
-/* Dinamis Warna Bisnis */
-.green { color: #16a34a !important; }
-.red { color: #dc2626 !important; }
-.amber { color: #d97706 !important; }
-
-/* Detail List & Progress Bar */
-.row-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
-.row-item:last-child { border-bottom: none; }
-.row-label { color: #475569; }
-.row-value { font-weight: 600; color: #0f172a; }
-.progress-bar { height: 10px; background: #e2e8f0; border-radius: 99px; overflow: hidden; margin-top: 10px; }
-.progress-fill { height: 100%; border-radius: 99px; transition: width .4s cubic-bezier(0.4, 0, 0.2, 1); }
-
-/* Badges / Verdict */
-.verdict-box { padding: 1.25rem; border-radius: 12px; margin-bottom: 1.25rem; border: 1px solid transparent; }
-.verdict-box p { font-size: 14px; font-weight: 500; margin-bottom: 8px; }
-.badge { display: inline-block; font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; text-transform: uppercase; }
-
-.badge-green, .verdict-green { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
-.badge-amber, .verdict-amber { background: #fffbeb; color: #d97706; border-color: #fde68a; }
-.badge-red, .verdict-red { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
-
-/* Accordion Rumus */
-.formula-details { background: #f1f5f9; border-radius: 12px; padding: 10px 14px; font-size: 13px; color: #475569; cursor: pointer; }
-.formula-details summary { font-weight: 600; color: #334155; outline: none; }
-.formula-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 10px; cursor: default; }
-@media(min-width: 600px) { .formula-grid { grid-template-columns: 1fr 1fr; } }
-.formula-box { background: #fff; padding: 8px 12px; border-radius: 8px; border-left: 3px solid #6366f1; font-size: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.01); }
+[data-theme="dark"] .footer-subtext {
+    color: #475569;
+} 

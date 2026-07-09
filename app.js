@@ -1,4 +1,6 @@
-// Data Awal Bahan Baku
+// ====================================================
+// 1. DATA AWAL BAHAN BAKU
+// ====================================================
 let bahanList = [
     { nama: "Rice paper 50 lbr", harga: 18000 },
     { nama: "Dada ayam fillet 500gr", harga: 35000 },
@@ -10,17 +12,20 @@ let bahanList = [
     { nama: "Saus sambal", harga: 8000 },
 ];
 
-// Helper Format Mata Uang & Persentase
 function fmt(n) {
     return "Rp " + Math.round(n).toLocaleString("id-ID");
 }
 function pct(n) {
     return Math.round(n) + "%";
 }
-
-// Render data tabel bahan baku ke HTML
+// ====================================================
+// 2. RENDER DATA TABEL BAHAN BAKU KE HTML
+// ====================================================
 function renderBahan() {
-    document.getElementById("bahan-list").innerHTML = bahanList.map((b, i) => `
+    const tabelContainer = document.getElementById("bahan-list");
+    if (!tabelContainer) return;
+    
+    tabelContainer.innerHTML = bahanList.map((b, i) => `
         <tr>
             <td>
                 <input type="text" style="border:none; padding:4px 0; background:transparent;" value="${b.nama}" oninput="bahanList[${i}].nama=this.value;">
@@ -28,7 +33,7 @@ function renderBahan() {
             <td>
                 <input type="number" value="${b.harga}" min="0" step="500" oninput="bahanList[${i}].harga=+this.value; calc();">
             </td>
-            <td style="text-align:center;">
+            <td class="table-action-col">
                 <button class="del-btn" onclick="delBahan(${i})">×</button>
             </td>
         </tr>
@@ -46,8 +51,9 @@ function delBahan(i) {
     renderBahan();
     calc();
 }
-
-// Fungsi Inti Kalkulasi HPP & Keuntungan
+// ====================================================
+// 3. FUNGSI INTI KALKULASI HPP & KEUNTUNGAN
+// ====================================================
 function calc() {
     const totalPcs = +document.getElementById("total-pcs").value || 1;
     const isiPorsi = +document.getElementById("isi-porsi").value || 1;
@@ -64,51 +70,56 @@ function calc() {
     const hppPerPorsi = hppPerPcs * isiPorsi;
     const untungPerPorsi = hargaJual - hppPerPorsi;
 
-    const totalPorsi = Math.floor(totalPcs / isiPorsi);
+    const totalPorsi = Math.floor(totalPcs / isiPorsi) || 1;
     const totalRevenue = totalPorsi * hargaJual;
     const totalUntung = totalRevenue - totalPengeluaran;
     const margin = totalRevenue > 0 ? (totalUntung / totalRevenue) * 100 : 0;
     const bep = hargaJual > 0 ? Math.ceil(totalPengeluaran / hargaJual) : 0;
 
-    // Logika pewarnaan status teks keuntungan
     const uc = totalUntung >= 0 ? "green" : "red";
     const mc = margin >= 50 ? "green" : margin >= 30 ? "amber" : "red";
 
-    // 1. Update Grid Metrik Atas
-    document.getElementById("metrics-out").innerHTML = `
-        <div class="metric"><div class="metric-label">Total Pengeluaran</div><div class="metric-value">${fmt(totalPengeluaran)}</div><div class="metric-sub">Bahan & Operasional</div></div>
-        <div class="metric"><div class="metric-label">HPP per Pcs</div><div class="metric-value">${fmt(hppPerPcs)}</div><div class="metric-sub">Modal 1 Spring Roll</div></div>
-        <div class="metric"><div class="metric-label">HPP per Porsi</div><div class="metric-value">${fmt(hppPerPorsi)}</div><div class="metric-sub">${isiPorsi} pcs × HPP</div></div>
-        <div class="metric"><div class="metric-label">Untung / Porsi</div><div class="metric-value ${uc}">${fmt(untungPerPorsi)}</div><div class="metric-sub">Jual − HPP Porsi</div></div>
-        <div class="metric"><div class="metric-label">Total Revenue</div><div class="metric-value">${fmt(totalRevenue)}</div><div class="metric-sub">Jika ${totalPorsi} porsi habis</div></div>
-        <div class="metric"><div class="metric-label">Untung Bersih</div><div class="metric-value ${uc}">${fmt(totalUntung)}</div><div class="metric-sub">Margin: ${pct(margin)}</div></div>
-    `;
+    // Update Grid Metrik
+    const metricsOut = document.getElementById("metrics-out");
+    if (metricsOut) {
+        metricsOut.innerHTML = `
+            <div class="metric"><div class="metric-label">Total Pengeluaran</div><div class="metric-value">${fmt(totalPengeluaran)}</div><div class="metric-sub">Bahan & Operasional</div></div>
+            <div class="metric"><div class="metric-label">HPP per Pcs</div><div class="metric-value">${fmt(hppPerPcs)}</div><div class="metric-sub">Modal 1 Spring Roll</div></div>
+            <div class="metric"><div class="metric-label">HPP per Porsi</div><div class="metric-value">${fmt(hppPerPorsi)}</div><div class="metric-sub">${isiPorsi} pcs × HPP</div></div>
+            <div class="metric"><div class="metric-label">Untung / Porsi</div><div class="metric-value ${uc}">${fmt(untungPerPorsi)}</div><div class="metric-sub">Jual − HPP Porsi</div></div>
+            <div class="metric"><div class="metric-label">Total Revenue</div><div class="metric-value">${fmt(totalRevenue)}</div><div class="metric-sub">Jika ${totalPorsi} porsi habis</div></div>
+            <div class="metric"><div class="metric-label">Untung Bersih</div><div class="metric-value ${uc}">${fmt(totalUntung)}</div><div class="metric-sub">Margin: ${pct(margin)}</div></div>
+        `;
+    }
 
-    // 2. Update Rincian & Progress Bar BEP
-    const bepPct = Math.min((bep / totalPorsi) * 100, 100);
+    // Update Detail Komponen & BEP
+    const bepPct = Math.min((bep / totalPorsi) * 100, 100) || 0;
     const barColor = margin >= 50 ? "#16a34a" : margin >= 30 ? "#d97706" : "#dc2626";
 
-    document.getElementById("detail-out").innerHTML = `
-        <h2 class="section-title">Rincian Komponen Biaya</h2>
-        <div class="row-item"><span class="row-label">Biaya Bahan Baku</span><span class="row-value">${fmt(totalBahan)}</span></div>
-        <div class="row-item"><span class="row-label">Biaya Kemasan</span><span class="row-value">${fmt(biayaKemasan)}</span></div>
-        <div class="row-item"><span class="row-label">Biaya Operasional</span><span class="row-value">${fmt(biayaOps)}</span></div>
-        <div class="row-item"><span class="row-label">Dana Cadangan</span><span class="row-value">${fmt(biayaExtra)}</span></div>
-        <div class="row-item" style="border-top:2px solid #f1f5f9; margin-top:4px; padding-top:12px;">
-            <span class="row-label" style="font-weight:700; color:#0f172a;">Total Modal Keseluruhan</span>
-            <span class="row-value" style="font-size:16px; color:#4f46e5;">${fmt(totalPengeluaran)}</span>
-        </div>
-        <div style="height:1.5rem;"></div>
-        <h2 class="section-title">Break Even Point (BEP) / Titik Impas</h2>
-        <div class="row-item"><span class="row-label">Target Minimal Penjualan</span><span class="row-value">${bep} Porsi <span style="font-weight:400; color:#64748b;">dari ${totalPorsi} porsi</span></span></div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct(bepPct)}; background:${barColor};"></div></div>
-        <p style="font-size:12px; color:#64748b; margin-top:6px;">Minimal <strong>${pct(bepPct)}</strong> dari total stok harus terjual habis untuk balik modal.</p>
-    `;
+    const detailOut = document.getElementById("detail-out");
+    if (detailOut) {
+        detailOut.innerHTML = `
+            <h2 class="section-title">Rincian Komponen Biaya</h2>
+            <div class="row-item"><span class="row-label">Biaya Bahan Baku</span><span class="row-value">${fmt(totalBahan)}</span></div>
+            <div class="row-item"><span class="row-label">Biaya Kemasan</span><span class="row-value">${fmt(biayaKemasan)}</span></div>
+            <div class="row-item"><span class="row-label">Biaya Operasional</span><span class="row-value">${fmt(biayaOps)}</span></div>
+            <div class="row-item"><span class="row-label">Dana Cadangan</span><span class="row-value">${fmt(biayaExtra)}</span></div>
+            <div class="row-item row-item-total">
+                <span class="row-label" style="font-weight:700;">Total Modal Keseluruhan</span>
+                <span class="row-value row-value-total">${fmt(totalPengeluaran)}</span>
+            </div>
+            <div class="verdict-space-helper"></div>
+            <h2 class="section-title">Break Even Point (BEP) / Titik Impas</h2>
+            <div class="row-item"><span class="row-label">Target Minimal Penjualan</span><span class="row-value">${bep} Porsi <span style="font-weight:400; color:var(--text-sub);">dari ${totalPorsi} porsi</span></span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${pct(bepPct)}; background:${barColor};"></div></div>
+            <p class="bep-info-text">Minimal <strong>${pct(bepPct)}</strong> dari total stok harus terjual habis untuk balik modal.</p>
+        `;
+    }
 
-    // 3. Update Kesimpulan / Verdict Box
+    // Update Verdict Box
     let verdict = "", vclass = "", vstatus = "";
     if (margin >= 50) {
-        verdict = `Sangat Sehat! Margin keuntungan mencapai ${pct(margin)}. Jika semua porsi habis terjual, Anda mengantongi untung bersih sebesar ${fmt(totalUntung)}.`;
+        verdict = `Sangat Sehat! Margin keuntungan mencapai ${pct(margin)}. Jika semua porsi habis terjual, kami mengantongi untung bersih sebesar ${fmt(totalUntung)}.`;
         vclass = "verdict-green";
         vstatus = "Untung Besar";
     } else if (margin >= 30) {
@@ -120,50 +131,67 @@ function calc() {
         vclass = "verdict-amber";
         vstatus = "Tipis / Rawan";
     } else {
-        verdict = `Mengalami Kerugian! Harga jual Anda di bawah HPP produk. Anda akan rugi sebesar ${fmt(Math.abs(totalUntung))} meskipun semua dagangan laku keras.`;
+        verdict = `Mengalami Kerugian! Harga jual di bawah HPP produk. Anda akan rugi sebesar ${fmt(Math.abs(totalUntung))} meskipun semua dagangan laku keras.`;
         vclass = "verdict-red";
         vstatus = "Rugi / Bahaya";
     }
 
-    document.getElementById("verdict-out").innerHTML = `
-        <div class="verdict-box ${vclass}">
-            <h2 class="section-title" style="color:inherit; margin-bottom:4px;">Kesimpulan Analisis Bisnis</h2>
-            <p>${verdict}</p>
-            <div style="margin-top:12px; display:flex; align-items:center; gap:8px;">
-                <span class="badge badge-${mc}">${vstatus}</span>
-                <span style="font-size:12px; color:#475569;">BEP: ${bep}/${totalPorsi} Porsi</span>
+    const verdictOut = document.getElementById("verdict-out");
+    if (verdictOut) {
+        verdictOut.innerHTML = `
+            <div class="verdict-box ${vclass}">
+                <h2 class="section-title" style="color:inherit; margin-bottom:4px;">Kesimpulan Analisis Bisnis</h2>
+                <p>${verdict}</p>
+                <div class="verdict-footer">
+                    <span class="badge badge-${mc}">${vstatus}</span>
+                    <span class="verdict-bep-label">BEP: ${bep}/${totalPorsi} Porsi</span>
+                </div>
             </div>
-        </div>
-    `;
+        `;
+    }
 }
+// ====================================================
+// 4. AMANKAN EKSEKUSI AWAL SETELAH DOM SIAP
+// ====================================================
+window.addEventListener("DOMContentLoaded", () => {
+    renderBahan();
+    calc();
 
-// Jalankan saat pertama kali dibuka
-renderBahan();
-calc();  
+    const themeToggleBtn = document.getElementById("theme-toggle");
+    const currentTheme = localStorage.getItem("theme");
+    
+    if (currentTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        if (themeToggleBtn) themeToggleBtn.innerHTML = "☀️ Mode Terang";
+    }
 
-// 4. LOGIKA TOGGLE THEME (GELAP / TERANG)
-const themeToggleBtn = document.getElementById("theme-toggle");
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener("click", function () {
+            let theme = document.documentElement.getAttribute("data-theme");
+            if (theme === "dark") {
+                document.documentElement.removeAttribute("data-theme");
+                themeToggleBtn.innerHTML = "🌙 Mode Gelap";
+                localStorage.setItem("theme", "light");
+            } else {
+                document.documentElement.setAttribute("data-theme", "dark");
+                themeToggleBtn.innerHTML = "☀️ Mode Terang";
+                localStorage.setItem("theme", "dark");
+            }
+        });
+    }
+}); 
+// ====================================================
+// FUNGSI KLIK LIHAT RUMUS (ACCORDION EFFECT)
+// ====================================================
+function toggleRumus() {
+    const content = document.getElementById("rumus-content");
+    const arrow = document.getElementById("rumus-arrow-icon");
 
-// Cek preferensi tema pengguna sebelumnya yang tersimpan di browser
-const currentTheme = localStorage.getItem("theme");
-if (currentTheme === "dark") {
-    document.documentElement.setAttribute("data-theme", "dark");
-    if (themeToggleBtn) themeToggleBtn.innerHTML = "☀️ Mode Terang";
-}
-
-// Jalankan aksi pergantian ketika tombol diklik
-if (themeToggleBtn) {
-    themeToggleBtn.addEventListener("click", function () {
-        let theme = document.documentElement.getAttribute("data-theme");
+    if (content && arrow) {
+        // Toggle class 'show' untuk meluncurkan konten ke bawah
+        content.classList.toggle("show");
         
-        if (theme === "dark") {
-            document.documentElement.removeAttribute("data-theme");
-            themeToggleBtn.innerHTML = "🌙 Mode Gelap";
-            localStorage.setItem("theme", "light");
-        } else {
-            document.documentElement.setAttribute("data-theme", "dark");
-            themeToggleBtn.innerHTML = "☀️ Mode Terang";
-            localStorage.setItem("theme", "dark");
-        }
-    });
+        // Toggle class 'rotate-arrow' untuk memutar panah kecil ke atas
+        arrow.classList.toggle("rotate-arrow");
+    }
 }

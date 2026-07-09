@@ -3,102 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulator HPP Spring Rolls</title>
+    <title>Kalkulator HPP & Keuntungan - Spring Rolls</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <button id="theme-toggle" class="theme-btn" aria-label="Ubah Tema">🌙 Mode Gelap</button>
+
     <header class="app-header">
         <div class="header-text">
-            <button id="theme-toggle" class="theme-btn" aria-label="Ubah Tema">🌙 Mode Gelap</button> 
-
-            <h1>Kalkulator HPP & Profit</h1>
+            <h1>Kalkulator HPP & Keuntungan</h1>
             <p class="sub">Spring Rolls — Kelompok 04 • Hasil dihitung otomatis secara real-time</p>
         </div>
         <img src="Idea-Stiker-Spring Rolls  - Ide 1.png" alt="Logo Spring Rolls" class="app-logo">
     </header>
 
     <main class="app-container">
-        <section class="input-sidebar">
-            <div class="card">
-                <h2 class="card-title">Info Produksi & Penjualan</h2>
-                <div class="input-group">
-                    <label for="total-pcs">Jumlah Pcs Diproduksi</label>
-                    <input type="number" id="total-pcs" value="50" min="1" oninput="calc()">
-                </div>
-                <div class="input-grid-2">
+        <div id="metrics-out" class="metrics-grid"></div>
+
+        <div class="grid-container">
+            <div class="left-column">
+                <section class="card">
+                    <h2 class="section-title">Parameter Produksi</h2>
+                    <div class="input-group">
+                        <label for="total-pcs">Total Produk (Pcs)</label>
+                        <input type="number" id="total-pcs" value="100" min="1" oninput="calc()">
+                    </div>
                     <div class="input-group">
                         <label for="isi-porsi">Isi per Porsi (Pcs)</label>
-                        <input type="number" id="isi-porsi" value="2" min="1" oninput="calc()">
+                        <input type="number" id="isi-porsi" value="4" min="1" oninput="calc()">
+                    </div> 
+                    <div class="input-group">
+                        <label for="harga-jual">Harga Jual per Porsi (Rp)</label>
+                        <input type="number" id="harga-jual" value="15000" min="0" step="500" oninput="calc()">
+                    </div>
+                </section>
+
+                <section class="card card-margin-top">
+                    <h2 class="section-title">Biaya Non-Bahan</h2>
+                    <div class="input-group">
+                        <label for="biaya-kemasan">Biaya Kemasan (Rp)</label>
+                        <input type="number" id="biaya-kemasan" value="25000" min="0" step="1000" oninput="calc()">
                     </div>
                     <div class="input-group">
-                        <label for="harga-jual">Harga Jual / Porsi</label>
-                        <div class="input-wrapper-rp">
-                            <input type="number" id="harga-jual" value="15000" min="0" step="500" oninput="calc()">
-                        </div>
+                        <label for="biaya-ops">Biaya Operasional (Rp)</label>
+                        <input type="number" id="biaya-ops" value="15000" min="0" step="1000" oninput="calc()">
+                    </div>
+                    <div class="input-group">
+                        <label for="biaya-extra">Dana Cadangan (Rp)</label>
+                        <input type="number" id="biaya-extra" value="10000" min="0" step="1000" oninput="calc()">
+                    </div>
+                </section>
+            </div>
+
+            <div class="right-column">
+                <section class="card table-card">
+                    <div class="table-header-flex">
+                        <h2 class="section-title-nomargin">Komponen Bahan Baku</h2>
+                        <button class="add-btn" onclick="addBahan()">+ Tambah</button>
+                    </div>
+                    <div class="table-responsive-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nama Bahan</th>
+                                    <th>Harga Total (Rp)</th>
+                                    <th class="table-action-col">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bahan-list"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div id="detail-out" class="card card-margin-top"></div>
+
+        <div id="verdict-out" class="card-margin-top"></div>
+
+        <section class="card card-margin-top rumus-card">
+            <button type="button" class="rumus-toggle-btn" onclick="toggleRumus()">
+                <span>Lihat rumus & Logika Bisnis</span>
+                <span id="rumus-arrow-icon">▼</span>
+            </button>
+            
+            <div id="rumus-content" class="rumus-content-collapse">
+                <div class="rumus-grid">
+                    <div class="rumus-item">
+                        <strong>Total Pengeluaran:</strong>
+                        <p>Total Biaya Bahan Baku + Biaya Kemasan + Biaya Operasional + Dana Cadangan</p>
+                    </div>
+                    <div class="rumus-item">
+                        <strong>HPP per Pcs:</strong>
+                        <p>Total Pengeluaran ÷ Total Produk (Pcs)</p>
+                    </div>
+                    <div class="rumus-item">
+                        <strong>HPP per Porsi:</strong>
+                        <p>HPP per Pcs × Isi per Porsi (Pcs)</p>
+                    </div>
+                    <div class="rumus-item">
+                        <strong>Untung per Porsi:</strong>
+                        <p>Harga Jual per Porsi − HPP per Porsi</p>
+                    </div>
+                    <div class="rumus-item">
+                        <strong>Total Pendapatan (Revenue):</strong>
+                        <p>Total Porsi Produksi × Harga Jual per Porsi</p>
+                    </div>
+                    <div class="rumus-item">
+                        <strong>Untung Bersih & Margin:</strong>
+                        <p>Total Pendapatan − Total Pengeluaran | (Untung Bersih ÷ Total Pendapatan) × 100%</p>
+                    </div>
+                    <div class="rumus-item full-width">
+                        <strong>Break Even Point (BEP) Porsi:</strong>
+                        <p>Total Pengeluaran ÷ Harga Jual per Porsi (Hasil pembulatan ke atas)</p>
                     </div>
                 </div>
             </div>
-
-            <div class="card">
-                <h2 class="card-title">Biaya Non-Bahan (Operasional)</h2>
-                <div class="input-group">
-                    <label for="biaya-kemasan">Kemasan / Box Total</label>
-                    <div class="input-wrapper-rp"><input type="number" id="biaya-kemasan" value="25000" min="0" step="1000" oninput="calc()"></div>
-                </div>
-                <div class="input-group">
-                    <label for="biaya-ops">Operasional Lain <span class="hint">(Plastik wrap, tisu, dll)</span></label>
-                    <div class="input-wrapper-rp"><input type="number" id="biaya-ops" value="10000" min="0" step="1000" oninput="calc()"></div>
-                </div>
-                <div class="input-group">
-                    <label for="biaya-extra">Dana Cadangan <span class="hint">(Saran: 5–10% dari modal)</span></label>
-                    <div class="input-wrapper-rp"><input type="number" id="biaya-extra" value="10000" min="0" step="1000" oninput="calc()"></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header-flex">
-                    <h2 class="card-title">Daftar Biaya Bahan</h2>
-                    <button class="add-btn" onclick="addBahan()">+ Tambah</button>
-                </div>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nama Bahan</th>
-                                <th width="120px">Harga</th>
-                                <th width="40px"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="bahan-list"></tbody>
-                    </table>
-                </div>
-            </div>
         </section>
-
-        <section class="result-dashboard">
-            <h2 class="section-title">Hasil Perhitungan</h2>
-            
-            <div class="grid-metrics" id="metrics-out"></div>
-
-            <div class="card" id="detail-out"></div>
-
-            <div id="verdict-out"></div>
-            
-            <details class="formula-details">
-                <summary>Lihat Rumus & Acuan Logika Bisnis</summary>
-                <div class="formula-grid">
-                    <div class="formula-box"><strong>Total Pengeluaran:</strong> Biaya Bahan + Kemasan + Operasional + Cadangan</div>
-                    <div class="formula-box"><strong>HPP per Pcs:</strong> Total Pengeluaran ÷ Jumlah Pcs Diproduksi</div>
-                    <div class="formula-box"><strong>HPP per Porsi:</strong> HPP per Pcs × Isi per Porsi</div>
-                    <div class="formula-box"><strong>Keuntungan per Porsi:</strong> Harga Jual − HPP per Porsi</div>
-                    <div class="formula-box"><strong>Total Revenue:</strong> (Jumlah Pcs ÷ Isi Porsi) × Harga Jual</div>
-                    <div class="formula-box"><strong>Keuntungan Bersih:</strong> Total Revenue − Total Pengeluaran</div>
-                </div>
-            </details>
-        </section>
-    </main>
+    </main> 
+    </main> <footer class="coder-footer">
+        <div class="footer-line"></div>
+        <p class="footer-text">
+            <span class="code-symbol">&lt;/&gt;</span>VIBE CODING by <span class="coder-name">Greysen</span> &copy; 2026
+        </p>
+        <p class="footer-subtext">// Kelompok 04 • Production Environment - Holtikulkura </p>
+    </footer>
 
     <script src="app.js"></script>
 </body>
-</html>
+</html> 
