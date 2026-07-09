@@ -1,4 +1,67 @@
-/* Reset & Base Styles */
+/* Reset & Base Styles */ 
+/* Aturan warna default (Mode Terang) */
+:root {
+    --bg-body: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #1e293b;
+    --text-title: #0f172a;
+    --text-sub: #64748b;
+    --border-color: #e2e8f0;
+}
+
+/* Aturan warna saat Mode Gelap aktif */
+[data-theme="dark"] {
+    --bg-body: #0f172a;      /* Navy Gelap */
+    --bg-card: #1e293b;      /* Slate Grey */
+    --text-main: #f1f5f9;    /* Putih Abu */
+    --text-title: #ffffff;   /* Putih Bersih */
+    --text-sub: #94a3b8;     /* Abu Terang */
+    --border-color: #334155; /* Border Gelap */
+}
+
+/* Terapkan variabel warna ke elemen-elemen yang sudah ada */
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    transition: background-color 0.3s, color 0.3s; /* Efek transisi halus saat ganti tema */
+}
+.card, .metric {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+h1 { color: var(--text-title); }
+.sub { color: var(--text-sub); }
+.card-title, .row-value { color: var(--text-title) !important; }
+.row-label, .section-title { color: var(--text-sub) !important; }
+.input-group input, table input {
+    background-color: var(--bg-body) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-title) !important;
+}
+
+/* Desain tombol switch tema yang estetik */
+.theme-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.theme-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;

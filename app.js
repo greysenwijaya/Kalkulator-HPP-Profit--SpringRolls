@@ -139,4 +139,31 @@ function calc() {
 
 // Jalankan saat pertama kali dibuka
 renderBahan();
-calc(); 
+calc();  
+
+// 4. LOGIKA TOGGLE THEME (GELAP / TERANG)
+const themeToggleBtn = document.getElementById("theme-toggle");
+
+// Cek preferensi tema pengguna sebelumnya yang tersimpan di browser
+const currentTheme = localStorage.getItem("theme");
+if (currentTheme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+    if (themeToggleBtn) themeToggleBtn.innerHTML = "☀️ Mode Terang";
+}
+
+// Jalankan aksi pergantian ketika tombol diklik
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", function () {
+        let theme = document.documentElement.getAttribute("data-theme");
+        
+        if (theme === "dark") {
+            document.documentElement.removeAttribute("data-theme");
+            themeToggleBtn.innerHTML = "🌙 Mode Gelap";
+            localStorage.setItem("theme", "light");
+        } else {
+            document.documentElement.setAttribute("data-theme", "dark");
+            themeToggleBtn.innerHTML = "☀️ Mode Terang";
+            localStorage.setItem("theme", "dark");
+        }
+    });
+}
