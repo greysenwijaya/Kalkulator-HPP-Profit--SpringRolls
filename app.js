@@ -22,7 +22,7 @@ const dbRefPenjualan = ref(db, "penjualan_springrolls");
 // ==========================================================================
 // 2. DATA AWAL & GLOBAL UTILITIES BY GREYSEN
 // ==========================================================================
-let bahanList = [
+export let bahanList = [
     { nama: "Rice paper 50 lbr", harga: 18000 },
     { nama: "Dada ayam fillet 500gr", harga: 35000 },
     { nama: "Wortel 3 buah", harga: 9000 },
@@ -45,20 +45,30 @@ function getHargaJualTerupdate() {
     return inputHargaJual ? parseFloat(inputHargaJual.value) || 0 : 0;
 }
 
+// Fungsi pembantu untuk mengupdate properti bahan secara eksternal (mengatasi scope modul)
+export function updateBahanNama(i, val) {
+    bahanList[i].nama = val;
+}
+
+export function updateBahanHarga(i, val) {
+    bahanList[i].harga = val;
+    calc(); // Hitung ulang setelah harga bahan diupdate
+}
+
 // ==========================================================================
 // 3. UI RENDERING & CORE CALCULATION (KALKULATOR)
 // ==========================================================================
-window.renderBahan = function() {
+export function renderBahan() {
     const tabelContainer = document.getElementById("bahan-list");
     if (!tabelContainer) return;
     
     tabelContainer.innerHTML = bahanList.map((b, i) => `
         <tr>
             <td>
-                <input type="text" style="border:none; padding:4px 0; background:transparent;" value="${b.nama}" oninput="bahanList[${i}].nama=this.value;">
+                <input type="text" style="border:none; padding:4px 0; background:transparent;" value="${b.nama}" oninput="window.updateBahanNama(${i}, this.value)">
             </td>
             <td>
-                <input type="number" value="${b.harga}" min="0" step="500" oninput="bahanList[${i}].harga=+this.value; calc();">
+                <input type="number" value="${b.harga}" min="0" step="500" oninput="window.updateBahanHarga(${i}, +this.value)">
             </td>
             <td class="table-action-col">
                 <button class="del-btn" onclick="delBahan(${i})">×</button>
@@ -67,19 +77,19 @@ window.renderBahan = function() {
     `).join("");
 }
 
-window.addBahan = function() {
+export function addBahan() {
     bahanList.push({ nama: "Bahan baru", harga: 0 });
-    window.renderBahan();
-    window.calc();
+    renderBahan();
+    calc();
 }
 
-window.delBahan = function(i) {
+export function delBahan(i) {
     bahanList.splice(i, 1);
-    window.renderBahan();
-    window.calc();
+    renderBahan();
+    calc();
 }
 
-window.calc = function() {
+export function calc() {
     const totalPcs = +document.getElementById("total-pcs").value || 1;
     const isiPorsi = +document.getElementById("isi-porsi").value || 1;
     const hargaJual = +document.getElementById("harga-jual").value || 0;
@@ -176,7 +186,7 @@ window.calc = function() {
 // ==========================================================================
 // 4. REALTIME DATABASE LOGIC (FEEDBACK & TRANSAKSI)
 // ==========================================================================
-window.tambahFeedback = function(event) {
+export function tambahFeedback(event) {
     event.preventDefault();
 
     const inputNama = document.getElementById("customer-name");
@@ -198,7 +208,7 @@ window.tambahFeedback = function(event) {
 
     push(dbRefPenjualan, dataBaru)
         .then(() => {
-            alert("Terima kasih! Ulasan Anda berhasil dikirim."); // Ditambahkan notifikasi berhasil
+            alert("Terima kasih! Ulasan Anda berhasil dikirim."); 
             event.target.reset();
         })
         .catch((error) => {
@@ -256,7 +266,7 @@ onValue(dbRefPenjualan, (snapshot) => {
 // ==========================================================================
 // 5. NAV CONTROLLER & CORE APPLICATION LOADERS
 // ==========================================================================
-window.switchTab = function(tabName) {
+export function switchTab(tabName) {
     const tabKalkulatorBtn = document.getElementById("tab-kalkulator-btn");
     const tabDashboardBtn = document.getElementById("tab-dashboard-btn");
     const contentKalkulator = document.getElementById("content-kalkulator");
@@ -276,7 +286,7 @@ window.switchTab = function(tabName) {
     }
 }
 
-window.toggleRumus = function() {
+export function toggleRumus() {
     const content = document.getElementById("rumus-content");
     const arrow = document.getElementById("rumus-arrow-icon");
     if (content && arrow) {
@@ -285,15 +295,16 @@ window.toggleRumus = function() {
     }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-    window.renderBahan();
-    window.calc();
+// Inisialisasi awal aplikasi
+function init() {
+    renderBahan();
+    calc();
 
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
 
     if (mode === 'pembeli') {
-        window.switchTab('dashboard');
+        switchTab('dashboard');
         
         // Sembunyikan navigasi tab atas
         const tabNav = document.querySelector(".tab-navigation");
@@ -334,4 +345,11 @@ window.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-});  
+}
+
+// Memastikan event DOMContentLoaded dipanggil dengan aman
+if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", init);
+} else {
+    init();
+} 
