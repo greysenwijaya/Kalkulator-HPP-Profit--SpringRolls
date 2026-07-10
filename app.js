@@ -1,9 +1,6 @@
 // ==========================================================================
 // 1. FIREBASE CONFIGURATION & INITIALIZATION
 // ==========================================================================
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
 const firebaseConfig = {
     apiKey: "AIzaSyC_ZNGHIIIzgGP7uT6qfMiufXX_tqO21hU",
     authDomain: "expo-komoditasholtikultura.firebaseapp.com",
@@ -14,15 +11,15 @@ const firebaseConfig = {
     appId: "1:834410046634:web:6585cfa58544db85b05cd3"
 };
 
-// Inisialisasi koneksi ke Firebase
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const dbRefPenjualan = ref(db, "penjualan_springrolls");
+// Inisialisasi koneksi ke Firebase (Compat Mode)
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const dbRefPenjualan = db.ref("penjualan_springrolls");
 
 // ==========================================================================
 // 2. DATA AWAL & GLOBAL UTILITIES BY GREYSEN
 // ==========================================================================
-export let bahanList = [
+let bahanList = [
     { nama: "Rice paper 50 lbr", harga: 18000 },
     { nama: "Dada ayam fillet 500gr", harga: 35000 },
     { nama: "Wortel 3 buah", harga: 9000 },
@@ -45,20 +42,20 @@ function getHargaJualTerupdate() {
     return inputHargaJual ? parseFloat(inputHargaJual.value) || 0 : 0;
 }
 
-// Fungsi pembantu untuk mengupdate properti bahan secara eksternal (mengatasi scope modul)
-export function updateBahanNama(i, val) {
+// Fungsi pembantu perubahan bahan agar dapat dibaca secara global
+function updateBahanNama(i, val) {
     bahanList[i].nama = val;
 }
 
-export function updateBahanHarga(i, val) {
+function updateBahanHarga(i, val) {
     bahanList[i].harga = val;
-    calc(); // Hitung ulang setelah harga bahan diupdate
+    calc();
 }
 
 // ==========================================================================
 // 3. UI RENDERING & CORE CALCULATION (KALKULATOR)
 // ==========================================================================
-export function renderBahan() {
+function renderBahan() {
     const tabelContainer = document.getElementById("bahan-list");
     if (!tabelContainer) return;
     
@@ -77,19 +74,19 @@ export function renderBahan() {
     `).join("");
 }
 
-export function addBahan() {
+function addBahan() {
     bahanList.push({ nama: "Bahan baru", harga: 0 });
     renderBahan();
     calc();
 }
 
-export function delBahan(i) {
+function delBahan(i) {
     bahanList.splice(i, 1);
     renderBahan();
     calc();
 }
 
-export function calc() {
+function calc() {
     const totalPcs = +document.getElementById("total-pcs").value || 1;
     const isiPorsi = +document.getElementById("isi-porsi").value || 1;
     const hargaJual = +document.getElementById("harga-jual").value || 0;
@@ -186,7 +183,7 @@ export function calc() {
 // ==========================================================================
 // 4. REALTIME DATABASE LOGIC (FEEDBACK & TRANSAKSI)
 // ==========================================================================
-export function tambahFeedback(event) {
+function tambahFeedback(event) {
     event.preventDefault();
 
     const inputNama = document.getElementById("customer-name");
@@ -206,9 +203,9 @@ export function tambahFeedback(event) {
         timestamp: Date.now()
     };
 
-    push(dbRefPenjualan, dataBaru)
+    dbRefPenjualan.push(dataBaru)
         .then(() => {
-            alert("Terima kasih! Ulasan Anda berhasil dikirim."); 
+            alert("Terima kasih! Ulasan Anda berhasil dikirim.");
             event.target.reset();
         })
         .catch((error) => {
@@ -218,7 +215,7 @@ export function tambahFeedback(event) {
 }
 
 // Sinkronisasi data cloud ke UI dashboard secara Live-Time
-onValue(dbRefPenjualan, (snapshot) => {
+dbRefPenjualan.on("value", (snapshot) => {
     let totalPelanggan = 0;
     let totalPorsiTerjual = 0;
     let totalOmset = 0;
@@ -266,7 +263,7 @@ onValue(dbRefPenjualan, (snapshot) => {
 // ==========================================================================
 // 5. NAV CONTROLLER & CORE APPLICATION LOADERS
 // ==========================================================================
-export function switchTab(tabName) {
+function switchTab(tabName) {
     const tabKalkulatorBtn = document.getElementById("tab-kalkulator-btn");
     const tabDashboardBtn = document.getElementById("tab-dashboard-btn");
     const contentKalkulator = document.getElementById("content-kalkulator");
@@ -286,7 +283,7 @@ export function switchTab(tabName) {
     }
 }
 
-export function toggleRumus() {
+function toggleRumus() {
     const content = document.getElementById("rumus-content");
     const arrow = document.getElementById("rumus-arrow-icon");
     if (content && arrow) {
@@ -294,6 +291,18 @@ export function toggleRumus() {
         arrow.classList.toggle("rotate-arrow");
     }
 }
+
+// Ekspos fungsi ke tingkat window untuk mendukung event handler inline HTML
+window.bahanList = bahanList;
+window.renderBahan = renderBahan;
+window.addBahan = addBahan;
+window.delBahan = delBahan;
+window.calc = calc;
+window.tambahFeedback = tambahFeedback;
+window.switchTab = switchTab;
+window.toggleRumus = toggleRumus;
+window.updateBahanNama = updateBahanNama;
+window.updateBahanHarga = updateBahanHarga;
 
 // Inisialisasi awal aplikasi
 function init() {
@@ -347,7 +356,7 @@ function init() {
     }
 }
 
-// Memastikan event DOMContentLoaded dipanggil dengan aman
+// Jalankan inisialisasi dengan aman
 if (document.readyState === "loading") {
     window.addEventListener("DOMContentLoaded", init);
 } else {

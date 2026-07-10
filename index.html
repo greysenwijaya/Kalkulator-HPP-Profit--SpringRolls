@@ -195,17 +195,11 @@
         <p class="footer-subtext">// Kelompok 04 • Production Environment</p>
     </footer>
 
-    <script type="module">
-        import * as AppModule from './app.js';
-        window.calc = AppModule.calc;
-        window.addBahan = AppModule.addBahan;
-        window.delBahan = AppModule.delBahan;
-        window.tambahFeedback = AppModule.tambahFeedback;
-        window.switchTab = AppModule.switchTab;
-        window.toggleRumus = AppModule.toggleRumus;
-        window.renderBahan = AppModule.renderBahan;
-        window.updateBahanNama = AppModule.updateBahanNama;
-        window.updateBahanHarga = AppModule.updateBahanHarga;
-    </script>
+    <!-- Firebase SDK (Compat/Classic Version) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <!-- Script logika aplikasi -->
+    <script src="app.js"></script>
 </body>
 </html> 
