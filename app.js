@@ -52,6 +52,25 @@ function updateBahanHarga(i, val) {
     calc();
 }
 
+// Fungsi untuk membatasi 1 orang = 1 suara (menyembunyikan form jika sudah vote)
+function checkVotingStatus() {
+    const hasVoted = localStorage.getItem("has_voted_springrolls");
+    if (hasVoted === "true") {
+        const formContainer = document.getElementById("feedback-form");
+        if (formContainer) {
+            formContainer.innerHTML = `
+                <div style="text-align: center; padding: 40px 10px; color: var(--text-title);">
+                    <div style="font-size: 48px; margin-bottom: 16px;">🎉</div>
+                    <h3 style="margin: 0 0 10px 0; color: #10b981; font-size: 18px;">Ulasan Anda Telah Terkirim!</h3>
+                    <p style="font-size: 13px; color: var(--text-sub); line-height: 1.5; margin: 0 0 20px 0;">
+                        Terima kasih banyak telah berpartisipasi dan memberikan masukan untuk Spring Rolls kami. Suara Anda sangat berharga bagi Kelompok 04!
+                    </p>
+                </div>
+            `;
+        }
+    }
+}
+
 // ==========================================================================
 // 3. UI RENDERING & CORE CALCULATION (KALKULATOR)
 // ==========================================================================
@@ -206,7 +225,10 @@ function tambahFeedback(event) {
     dbRefPenjualan.push(dataBaru)
         .then(() => {
             alert("Terima kasih! Ulasan Anda berhasil dikirim.");
-            event.target.reset();
+            // Simpan tanda vote lokal
+            localStorage.setItem("has_voted_springrolls", "true");
+            // Kunci form dan ubah menjadi ucapan terima kasih
+            checkVotingStatus();
         })
         .catch((error) => {
             console.error("Firebase Database Error: ", error);
@@ -303,6 +325,7 @@ window.switchTab = switchTab;
 window.toggleRumus = toggleRumus;
 window.updateBahanNama = updateBahanNama;
 window.updateBahanHarga = updateBahanHarga;
+window.checkVotingStatus = checkVotingStatus;
 
 // Inisialisasi awal aplikasi
 function init() {
@@ -318,6 +341,16 @@ function init() {
         // Sembunyikan navigasi tab atas
         const tabNav = document.querySelector(".tab-navigation");
         if (tabNav) tabNav.style.display = "none";
+
+        // Mengubah judul utama dan sub-judul khusus untuk pembeli (Pilihan 1)
+        const mainHeader = document.querySelector(".header-text h1");
+        if (mainHeader) mainHeader.innerText = "Selamat Datang di Portal Pelanggan Spring Rolls";
+
+        const subHeader = document.querySelector(".header-text .sub");
+        if (subHeader) subHeader.innerText = "Kelompok 04 • Suara Anda membantu kami menyajikan kualitas terbaik kami";
+
+        // Periksa apakah browser ini sudah pernah mengirim ulasan
+        checkVotingStatus();
 
         // Sembunyikan statistik admin di sisi kanan secara spesifik agar layout grid aman
         const dashboardGrid = document.getElementById("content-dashboard").querySelector(".grid-container");
