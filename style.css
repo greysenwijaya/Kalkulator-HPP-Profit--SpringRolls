@@ -271,4 +271,4 @@ table input { width: 100%; color: var(--text-title); font-size: 14px; outline: n
 
 .feedback-scroll-container { max-height: 250px; overflow-y: auto; padding-right: 4px; }
 .review-item-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.review-item-card:hover { transform: translateX(4px); box-shadow: -3px 0px 0px #10b981; } 
+.review-item-card:hover { transform: translateX(4px); box-shadow: -3px 0px 0px #10b981; }  

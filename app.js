@@ -40,7 +40,6 @@ function pct(n) {
     return Math.round(n) + "%";
 }
 
-// Mengambil harga jual dari kalkulator secara real-time untuk kebutuhan omset database
 function getHargaJualTerupdate() {
     const inputHargaJual = document.getElementById("harga-jual");
     return inputHargaJual ? parseFloat(inputHargaJual.value) || 0 : 0;
@@ -199,10 +198,12 @@ window.tambahFeedback = function(event) {
 
     push(dbRefPenjualan, dataBaru)
         .then(() => {
+            alert("Terima kasih! Ulasan Anda berhasil dikirim."); // Ditambahkan notifikasi berhasil
             event.target.reset();
         })
         .catch((error) => {
-            console.error("Firebase Storage Error: ", error);
+            console.error("Firebase Database Error: ", error);
+            alert("Gagal mengirim ulasan: " + error.message);
         });
 }
 
@@ -220,13 +221,13 @@ onValue(dbRefPenjualan, (snapshot) => {
         arrayData.forEach(item => {
             totalPelanggan += 1;
             totalPorsiTerjual += item.porsi;
-            totalOmset += item.omset;
+            totalOmset += (item.omset || 0);
 
             listFeedbackHTML.push(`
                 <div class="review-item-card" style="background: rgba(148, 163, 184, 0.04); border: 1px solid rgba(148, 163, 184, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 8px;">
                     <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
                         <strong style="color: #10b981;">${item.nama} <span style="font-weight:400; color:var(--text-sub);">(${item.porsi} Porsi)</span></strong>
-                        <span style="color: var(--text-sub);">${item.waktu}</span>
+                        <span style="color: var(--text-sub);">${item.waktu || ''}</span>
                     </div>
                     <p style="font-size: 12px; color: var(--text-title); margin: 0; font-style: italic;">"${item.review}"</p>
                 </div>
@@ -234,7 +235,6 @@ onValue(dbRefPenjualan, (snapshot) => {
         });
     }
 
-    // Suntikkan hasil kalkulasi real-time ke card dashboard admin
     const statPelanggan = document.getElementById("stat-pelanggan");
     const statTerjual = document.getElementById("stat-terjual");
     const statOmset = document.getElementById("stat-omset");
@@ -257,18 +257,22 @@ onValue(dbRefPenjualan, (snapshot) => {
 // 5. NAV CONTROLLER & CORE APPLICATION LOADERS
 // ==========================================================================
 window.switchTab = function(tabName) {
-    document.getElementById("tab-kalkulator-btn").classList.remove("active");
-    document.getElementById("tab-dashboard-btn").classList.remove("active");
-    
-    document.getElementById("content-kalkulator").classList.remove("active-content");
-    document.getElementById("content-dashboard").classList.remove("active-content");
+    const tabKalkulatorBtn = document.getElementById("tab-kalkulator-btn");
+    const tabDashboardBtn = document.getElementById("tab-dashboard-btn");
+    const contentKalkulator = document.getElementById("content-kalkulator");
+    const contentDashboard = document.getElementById("content-dashboard");
 
-    if (tabName === 'kalkulator') {
-        document.getElementById("tab-kalkulator-btn").classList.add("active");
-        document.getElementById("content-kalkulator").classList.add("active-content");
-    } else if (tabName === 'dashboard') {
-        document.getElementById("tab-dashboard-btn").classList.add("active");
-        document.getElementById("content-dashboard").classList.add("active-content");
+    if(tabKalkulatorBtn) tabKalkulatorBtn.classList.remove("active");
+    if(tabDashboardBtn) tabDashboardBtn.classList.remove("active");
+    if(contentKalkulator) contentKalkulator.classList.remove("active-content");
+    if(contentDashboard) contentDashboard.classList.remove("active-content");
+
+    if (tabName === 'kalkulator' && contentKalkulator && tabKalkulatorBtn) {
+        tabKalkulatorBtn.classList.add("active");
+        contentKalkulator.classList.add("active-content");
+    } else if (tabName === 'dashboard' && contentDashboard && tabDashboardBtn) {
+        tabDashboardBtn.classList.add("active");
+        contentDashboard.classList.add("active-content");
     }
 }
 
@@ -281,29 +285,33 @@ window.toggleRumus = function() {
     }
 }
 
-// Inisialisasi awal saat dokumen siap dimuat browser
 window.addEventListener("DOMContentLoaded", () => {
-    // Jalankan kalkulator dan render tabel bawaan kelompok
     window.renderBahan();
     window.calc();
 
-    // Jalankan pengecekan hak akses URL Parameter (?mode=pembeli)
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
 
     if (mode === 'pembeli') {
         window.switchTab('dashboard');
+        
+        // Sembunyikan navigasi tab atas
         const tabNav = document.querySelector(".tab-navigation");
         if (tabNav) tabNav.style.display = "none";
 
-        const adminSection = document.querySelector(".right-column");
-        if (adminSection) adminSection.style.display = "none";
+        // Sembunyikan statistik admin di sisi kanan secara spesifik agar layout grid aman
+        const dashboardGrid = document.getElementById("content-dashboard").querySelector(".grid-container");
+        if (dashboardGrid) {
+            dashboardGrid.style.gridTemplateColumns = "1fr"; // Paksa kolom tunggal penuh
+            const rightColumnAdmin = dashboardGrid.querySelector(".right-column");
+            if (rightColumnAdmin) rightColumnAdmin.style.display = "none";
+        }
 
-        const title = document.querySelector(".section-title");
+        // Ubah judul form input ulasan pembeli
+        const title = document.getElementById("content-dashboard").querySelector(".section-title");
         if (title) title.innerText = "✍️ Silakan Isi Kritik & Saran Spring Rolls Kami";
     }
 
-    // Logika Tema Mode Gelap/Terang bawaan Greysen
     const themeToggleBtn = document.getElementById("theme-toggle");
     const currentTheme = localStorage.getItem("theme");
     
