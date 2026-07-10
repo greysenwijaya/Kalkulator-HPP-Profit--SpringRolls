@@ -1,338 +1,274 @@
-/* ====================================================
-   1. VARIABLES & SYSTEM THEME
-   ==================================================== */
+/* ==========================================================================
+   GLOBAL CONFIGURATION & THEME ROOT BY GREYSEN
+   ========================================================================== */
 :root {
-    --bg-body: #f8fafc;
+    --bg-app: #f8fafc;
     --bg-card: #ffffff;
-    --text-main: #334155;
     --text-title: #0f172a;
     --text-sub: #64748b;
-    --border-color: #e2e8f0;
-    
-    --primary: #4f46e5;
-    --success: #16a34a;
-    --danger: #dc2626;
+    --border-color: rgba(148, 163, 184, 0.12);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 [data-theme="dark"] {
-    --bg-body: #0f172a;
+    --bg-app: #0f172a;
     --bg-card: #1e293b;
-    --text-main: #cbd5e1;
-    --text-title: #ffffff;
+    --text-title: #f8fafc;
     --text-sub: #94a3b8;
-    --border-color: #334155;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', system-ui, sans-serif;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
 }
 
 body {
-    background-color: var(--bg-body);
-    color: var(--text-main);
-    padding: 50px 20px;
-    position: relative;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-/* ====================================================
-   2. REPLACEMENT CLASSES (Pindahan dari HTML Inline)
-   ==================================================== */
-.card-margin-top {
-    margin-top: 24px;
-}
-
-.table-header-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.section-title-nomargin {
-    font-size: 16px;
+    background-color: var(--bg-app);
     color: var(--text-title);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
-    font-weight: 700;
+    padding: 20px;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
-.table-responsive-wrapper {
-    overflow-x: auto;
-}
-
-.table-action-col {
-    width: 50px;
-    text-align: center;
-}
-
-.row-item-total {
-    border-top: 2px solid var(--border-color);
-    margin-top: 4px;
-    padding-top: 12px;
-}
-
-.row-value-total {
-    font-size: 16px;
-    color: var(--primary);
-}
-
-.verdict-space-helper {
-    height: 1.5rem;
-}
-
-.bep-info-text {
-    font-size: 12px;
-    color: var(--text-sub);
-    margin-top: 6px;
-}
-
-.verdict-footer {
-    margin-top: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.verdict-bep-label {
-    font-size: 12px;
-}
-
-/* ====================================================
-   3. STRUKTUR UTAMA UTILS
-   ==================================================== */
-.theme-btn {
-    position: absolute;
-    top: 16px;
-    right: 20px;
-    z-index: 1000;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 8px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 20px;
-    cursor: pointer;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    transition: all 0.2s;
-}
-.theme-btn:hover {
-    transform: translateY(-1px);
-}
-
-.app-header {
-    max-width: 1100px;
-    margin: 0 auto 30px auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.header-text h1 { font-size: 28px; color: var(--text-title); margin-bottom: 4px; }
-.header-text .sub { font-size: 14px; color: var(--text-sub); }
-.app-logo { width: 75px; height: 75px; object-fit: cover; border-radius: 50%; border: 2px solid var(--primary); }
-
+/* ==========================================================================
+   LAYOUT STRUCTURE
+   ========================================================================== */
 .app-container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
-.metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-}
-.metric {
-    background: var(--bg-card);
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-}
-.metric-label { font-size: 12px; color: var(--text-sub); font-weight: 500; margin-bottom: 4px; }
-.metric-value { font-size: 18px; font-weight: 700; color: var(--text-title); }
-.metric-value.green { color: var(--success) !important; }
-.metric-value.red { color: var(--danger) !important; }
-.metric-sub { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
-
-.grid-container {
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: 24px;
-}
-
-.card {
-    background: var(--bg-card);
-    border-radius: 12px;
-    padding: 20px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-}
-.section-title { font-size: 16px; color: var(--text-title); margin-bottom: 16px; font-weight: 700; }
-
-.input-group { margin-bottom: 12px; }
-.input-group:last-child { margin-bottom: 0; }
-.input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-.input-group input, table input {
-    width: 100%; padding: 8px 12px; font-size: 14px;
-    border: 1px solid var(--border-color); border-radius: 6px;
-    background: var(--bg-body); color: var(--text-title); outline: none;
-}
-
-table { width: 100%; border-collapse: collapse; }
-table th { padding: 10px; font-size: 13px; font-weight: 600; text-align: left; border-bottom: 2px solid var(--border-color); }
-table td { padding: 8px; border-bottom: 1px solid var(--border-color); }
-
-.add-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; font-size: 13px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-.del-btn { background: none; border: none; color: var(--danger); font-size: 18px; cursor: pointer; }
-
-.row-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid var(--border-color); }
-.row-label { color: var(--text-sub); }
-.row-value { font-weight: 600; color: var(--text-title); }
-.progress-bar { background: var(--border-color); height: 8px; border-radius: 4px; margin-top: 8px; overflow: hidden; }
-.progress-fill { height: 100%; transition: width 0.3s; }
-
-.verdict-box { padding: 16px; border-radius: 10px; }
-.verdict-green { background: rgba(22, 163, 74, 0.1); color: #16a34a; border: 1px solid #16a34a; }
-.verdict-amber { background: rgba(217, 119, 6, 0.1); color: #d97706; border: 1px solid #d97706; }
-.verdict-red { background: rgba(220, 38, 38, 0.1); color: #dc2626; border: 1px solid #dc2626; }
-.badge { padding: 2px 8px; font-size: 11px; font-weight: 700; border-radius: 4px; color: white; display: inline-block; }
-.badge-green { background: var(--success); }
-.badge-amber { background: #d97706; }
-.badge-red { background: var(--danger); }
-
-/* RESPONSIVE LAYOUT UNTUK HP */
-@media (max-width: 768px) {
-    body { padding: 20px 10px; }
-    .theme-btn { top: 12px; right: 12px; padding: 6px 10px; font-size: 12px; }
-    .app-header { flex-direction: column; text-align: center; gap: 12px; margin-bottom: 20px; }
-    .grid-container { grid-template-columns: 1fr; gap: 20px; }
-}  
-/* ====================================================
-   5. STYLE UNTUK TOMBOL RUMUS INTERAKTIF
-   ==================================================== */
-.rumus-card {
-    background: rgba(79, 70, 229, 0.02) !important;
-    border: 1px dashed var(--primary) !important;
-    padding: 0 !important; /* Reset padding luar agar rapi saat tertutup */
-    overflow: hidden;
-}
-
-.rumus-toggle-btn {
-    width: 100%;
-    background: transparent;
-    border: none;
+.app-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-title);
-    cursor: pointer;
-    outline: none;
-    transition: background 0.2s;
+    max-width: 1200px;
+    margin: 0 auto 30px auto;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.rumus-toggle-btn:hover {
-    background: rgba(79, 70, 229, 0.05); /* Efek highlight pas cursor lewat */
+.app-logo {
+    max-height: 70px;
+    object-fit: contain;
 }
 
-/* Konten disembunyikan secara default */
-.rumus-content-collapse {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out, padding 0.3s ease;
-    padding: 0 20px; /* Jaga jarak samping */
+.header-text h1 {
+    margin: 0 0 6px 0;
+    font-size: 28px;
 }
 
-/* Class aktif yang akan dipicu oleh JavaScript saat di-klik */
-.rumus-content-collapse.show {
-    max-height: 500px; /* Batas tinggi maksimum ketika meluncur ke bawah */
-    padding: 0 20px 20px 20px; /* Beri padding bawah saat terbuka */
-}
-
-#rumus-arrow-icon {
-    font-size: 12px;
-    transition: transform 0.3s ease;
+.header-text .sub {
+    margin: 0;
     color: var(--text-sub);
 }
 
-/* Memutar ikon panah ketika terbuka */
-.rotate-arrow {
-    transform: rotate(180deg);
-    color: var(--primary) !important;
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
 }
 
-/* Struktur isi dalam grid tetap sama */
-.rumus-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.rumus-item { background: var(--bg-card); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); }
-.rumus-item strong { display: block; font-size: 13px; color: var(--primary); margin-bottom: 4px; }
-.rumus-item p { font-size: 12px; color: var(--text-main); line-height: 1.4; }
-.rumus-item.full-width { grid-column: span 2; }
-
-@media (max-width: 768px) {
-    .rumus-grid { grid-template-columns: 1fr; }
-    .rumus-item.full-width { grid-column: span 1; }
-} 
-
-/* ====================================================
-   6. CODER FOOTER (BY GREYSEN - VIBE CODING)
-   ==================================================== */
-.coder-footer {
-    margin-top: 60px;
-    padding-bottom: 20px;
-    text-align: center;
-    font-family: 'Courier New', Courier, monospace; /* Wajib font gaya coding */
+@media(max-width: 850px) {
+    .grid-container { grid-template-columns: 1fr; }
+    .app-header { flex-direction: column; text-align: center; gap: 16px; }
 }
 
-.footer-line {
-    width: 40px;
-    height: 2px;
-    background: rgba(148, 163, 184, 0.3); /* Garis pembatas abu-abu tipis */
-    margin: 0 auto 16px auto;
+/* ==========================================================================
+   COMPONENTS & CARDS
+   ========================================================================== */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    border-radius: 12px;
+    padding: 24px;
 }
 
-.footer-text {
-    font-size: 13px;
-    color: #94a3b8; /* Abu-abu khas teks komentar/keterangan coding */
-    letter-spacing: 0.5px;
+.card-margin-top { margin-top: 24px; }
+
+.section-title { font-size: 18px; margin: 0 0 18px 0; color: var(--text-title); border-left: 4px solid #3b82f6; padding-left: 10px; }
+.section-title-nomargin { font-size: 18px; margin: 0; color: var(--text-title); border-left: 4px solid #3b82f6; padding-left: 10px; }
+
+/* Form Controls */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
 }
 
-/* Beri penekanan tipis pada nama Anda agar terlihat pro */
-.coder-footer .coder-name {
-    color: #64748b;
-    font-weight: 700;
-    transition: color 0.2s ease;
+.input-group:last-child { margin-bottom: 0; }
+
+.input-group label { font-size: 13px; font-weight: 600; color: var(--text-sub); }
+
+.input-group input {
+    background: transparent;
+    color: var(--text-title);
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s ease;
 }
 
-/* Efek hover interaktif kalau nama di-sorot cursor */
-.coder-footer:hover .coder-name {
-    color: var(--primary); /* Berubah jadi ungu aksen saat disorot */
+.input-group input:focus { border-color: #3b82f6; }
+
+/* Buttons */
+.theme-btn {
+    position: absolute; top: 20px; right: 20px;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    color: var(--text-title); padding: 8px 14px; border-radius: 20px;
+    cursor: pointer; font-size: 13px; font-weight: 500;
 }
 
-.coder-footer .code-symbol {
-    color: var(--primary);
-    font-weight: bold;
+.add-btn, .del-btn {
+    cursor: pointer; border-radius: 6px; font-weight: 600; transition: all 0.2s ease;
 }
 
-.footer-subtext {
-    font-size: 10px;
-    color: #cbd5e1;
-    margin-top: 4px;
-    opacity: 0.7;
+.add-btn {
+    background: #3b82f6; color: white; border: none; padding: 6px 14px; font-size: 13px;
+    display: inline-flex; align-items: center; gap: 6px;
+}
+.add-btn:hover { background: #2563eb; }
+
+.del-btn { background: rgba(220, 38, 38, 0.1); color: #dc2626; border: none; width: 28px; height: 28px; font-size: 16px; }
+.del-btn:hover { background: #dc2626; color: white; }
+
+/* ==========================================================================
+   TABLES DESIGN
+   ========================================================================== */
+.table-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.table-responsive-wrapper { overflow-x: auto; }
+
+table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+th { color: var(--text-sub); padding: 10px; border-bottom: 2px solid var(--border-color); font-weight: 600; }
+td { padding: 10px; border-bottom: 1px solid var(--border-color); }
+.table-action-col { text-align: center; width: 50px; }
+
+table input { width: 100%; color: var(--text-title); font-size: 14px; outline: none; box-sizing: border-box; }
+
+/* ==========================================================================
+   METRICS GRID OUTPUT
+   ========================================================================== */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
 }
 
-/* Penyesuaian warna teks khusus saat website dalam Mode Gelap */
-[data-theme="dark"] .footer-text {
-    color: #64748b;
+.metric {
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 16px; box-shadow: var(--shadow);
 }
-[data-theme="dark"] .coder-name {
-    color: #94a3b8;
+
+.metric-label { font-size: 12px; color: var(--text-sub); font-weight: 500; margin-bottom: 4px; }
+.metric-value { font-size: 20px; font-weight: 700; }
+.metric-sub { font-size: 11px; color: var(--text-sub); margin-top: 4px; }
+
+/* Business Status Color Utility */
+.green { color: #16a34a !important; }
+.amber { color: #d97706 !important; }
+.red { color: #dc2626 !important; }
+
+/* Rincian Komponen Rows */
+.row-item { display: flex; justify-content: space-between; padding: 10px 0; font-size: 14px; border-bottom: 1px dashed var(--border-color); }
+.row-item-total { border-bottom: none; margin-top: 10px; font-size: 16px; }
+.row-value-total { color: #3b82f6; font-weight: 700; }
+.verdict-space-helper { margin-bottom: 24px; }
+
+/* BEP Progress Bar */
+.progress-bar { background: rgba(148, 163, 184, 0.2); height: 8px; border-radius: 4px; margin: 12px 0 6px 0; overflow: hidden; }
+.progress-fill { height: 100%; width: 0; transition: width 0.5s ease, background 0.5s ease; }
+.bep-info-text { font-size: 12px; color: var(--text-sub); margin: 0; }
+
+/* Verdict Response Box */
+.verdict-box { padding: 18px; border-radius: 8px; border-left: 5px solid transparent; }
+.verdict-box p { margin: 0 0 12px 0; font-size: 14px; line-height: 1.5; }
+.verdict-green { background: rgba(22, 163, 74, 0.08); border-color: #16a34a; color: var(--text-title); }
+.verdict-amber { background: rgba(217, 119, 6, 0.08); border-color: #d97706; color: var(--text-title); }
+.verdict-red { background: rgba(220, 38, 38, 0.08); border-color: #dc2626; color: var(--text-title); }
+
+.verdict-footer { display: flex; gap: 8px; align-items: center; }
+.badge { font-size: 11px; padding: 3px 8px; border-radius: 12px; color: white; font-weight: 600; }
+.badge-green { background: #16a34a; }
+.badge-amber { background: #d97706; }
+.badge-red { background: #dc2626; }
+.verdict-bep-label { font-size: 11px; color: var(--text-sub); font-weight: 500; }
+
+/* Accordion Rumus Section */
+.rumus-toggle-btn {
+    width: 100%; background: transparent; border: none; color: var(--text-sub);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 14px; font-weight: 600; cursor: pointer; padding: 4px 0;
 }
-[data-theme="dark"] .footer-subtext {
-    color: #475569;
+.rumus-toggle-btn:hover { color: var(--text-title); }
+#rumus-arrow-icon { font-size: 10px; transition: transform 0.3s ease; }
+#rumus-arrow-icon.rotate-arrow { transform: rotate(180deg); }
+
+.rumus-content-collapse {
+    max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;
 }
+.rumus-content-collapse.show { max-height: 800px; margin-top: 20px; }
+
+.rumus-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.rumus-item { background: rgba(148, 163, 184, 0.04); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); }
+.rumus-item strong { font-size: 13px; display: block; margin-bottom: 4px; color: var(--text-title); }
+.rumus-item p { margin: 0; font-size: 12px; color: var(--text-sub); line-height: 1.4; }
+.full-width { grid-column: span 2; }
+
+/* Footer */
+.coder-footer { margin-top: 60px; text-align: center; padding-bottom: 20px; }
+.footer-line { height: 1px; background: var(--border-color); margin-bottom: 20px; }
+.footer-text { font-size: 14px; font-weight: 500; margin: 0 0 4px 0; color: var(--text-title); }
+.code-symbol { color: #3b82f6; font-weight: 700; margin-right: 6px; }
+.coder-name { font-weight: 700; color: #3b82f6; }
+.footer-subtext { font-size: 11px; color: var(--text-sub); font-family: monospace; margin: 0; }
+
+/* ==========================================================================
+   NAVIGATION TABS & LIVE DASHBOARD VIEW (SYSTEM EXTRA)
+   ========================================================================== */
+.tab-navigation {
+    display: flex; gap: 12px; margin-bottom: 24px;
+    border-bottom: 2px solid var(--border-color); padding-bottom: 12px;
+}
+
+.tab-btn {
+    background: transparent; border: none; color: var(--text-sub);
+    padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+    border-radius: 6px; transition: all 0.25s ease;
+}
+.tab-btn:hover { background: rgba(148, 163, 184, 0.08); color: var(--text-title); }
+.tab-btn.active { background: #3b82f6; color: #ffffff !important; }
+
+.tab-content { display: none; animation: slideUpFade 0.35s ease forwards; }
+.tab-content.active-content { display: block; }
+
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Dashboard Forms & Items */
+#feedback-form textarea {
+    width: 100%; padding: 10px; border-radius: 8px;
+    border: 1px solid var(--border-color); background: transparent;
+    color: var(--text-title); font-family: inherit; font-size: 13px;
+    resize: none; box-sizing: border-box;
+}
+#feedback-form textarea:focus { outline: none; border-color: #10b981; }
+
+.submit-feedback-btn { width: 100%; justify-content: center; padding: 12px; margin-top: 14px; background: #10b981; font-weight: 600; }
+.submit-feedback-btn:hover { background: #059669; }
+
+.dashboard-metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+.db-metric-box { background: rgba(148, 163, 184, 0.04); border: 1px solid var(--border-color); padding: 14px; border-radius: 8px; text-align: center; }
+.db-metric-label { font-size: 10px; letter-spacing: 0.5px; color: var(--text-sub); display: block; margin-bottom: 6px; }
+.db-metric-box strong { font-size: 20px; color: var(--text-title); }
+
+.db-metric-box.highlight-omset { background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.2); grid-column: span 2; }
+.db-metric-box.highlight-omset strong { color: #10b981; }
+
+.feedback-scroll-container { max-height: 250px; overflow-y: auto; padding-right: 4px; }
+.review-item-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.review-item-card:hover { transform: translateX(4px); box-shadow: -3px 0px 0px #10b981; } 

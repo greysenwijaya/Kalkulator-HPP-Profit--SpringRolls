@@ -1,6 +1,27 @@
-// ====================================================
-// 1. DATA AWAL BAHAN BAKU
-// ====================================================
+// ==========================================================================
+// 1. FIREBASE CONFIGURATION & INITIALIZATION
+// ==========================================================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyC_ZNGHIIIzgGP7uT6qfMiufXX_tqO21hU",
+    authDomain: "expo-komoditasholtikultura.firebaseapp.com",
+    databaseURL: "https://expo-komoditasholtikultura-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "expo-komoditasholtikultura",
+    storageBucket: "expo-komoditasholtikultura.firebasestorage.app",
+    messagingSenderId: "834410046634",
+    appId: "1:834410046634:web:6585cfa58544db85b05cd3"
+};
+
+// Inisialisasi koneksi ke Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const dbRefPenjualan = ref(db, "penjualan_springrolls");
+
+// ==========================================================================
+// 2. DATA AWAL & GLOBAL UTILITIES BY GREYSEN
+// ==========================================================================
 let bahanList = [
     { nama: "Rice paper 50 lbr", harga: 18000 },
     { nama: "Dada ayam fillet 500gr", harga: 35000 },
@@ -18,10 +39,17 @@ function fmt(n) {
 function pct(n) {
     return Math.round(n) + "%";
 }
-// ====================================================
-// 2. RENDER DATA TABEL BAHAN BAKU KE HTML
-// ====================================================
-function renderBahan() {
+
+// Mengambil harga jual dari kalkulator secara real-time untuk kebutuhan omset database
+function getHargaJualTerupdate() {
+    const inputHargaJual = document.getElementById("harga-jual");
+    return inputHargaJual ? parseFloat(inputHargaJual.value) || 0 : 0;
+}
+
+// ==========================================================================
+// 3. UI RENDERING & CORE CALCULATION (KALKULATOR)
+// ==========================================================================
+window.renderBahan = function() {
     const tabelContainer = document.getElementById("bahan-list");
     if (!tabelContainer) return;
     
@@ -40,21 +68,19 @@ function renderBahan() {
     `).join("");
 }
 
-function addBahan() {
+window.addBahan = function() {
     bahanList.push({ nama: "Bahan baru", harga: 0 });
-    renderBahan();
-    calc();
+    window.renderBahan();
+    window.calc();
 }
 
-function delBahan(i) {
+window.delBahan = function(i) {
     bahanList.splice(i, 1);
-    renderBahan();
-    calc();
+    window.renderBahan();
+    window.calc();
 }
-// ====================================================
-// 3. FUNGSI INTI KALKULASI HPP & KEUNTUNGAN
-// ====================================================
-function calc() {
+
+window.calc = function() {
     const totalPcs = +document.getElementById("total-pcs").value || 1;
     const isiPorsi = +document.getElementById("isi-porsi").value || 1;
     const hargaJual = +document.getElementById("harga-jual").value || 0;
@@ -79,7 +105,6 @@ function calc() {
     const uc = totalUntung >= 0 ? "green" : "red";
     const mc = margin >= 50 ? "green" : margin >= 30 ? "amber" : "red";
 
-    // Update Grid Metrik
     const metricsOut = document.getElementById("metrics-out");
     if (metricsOut) {
         metricsOut.innerHTML = `
@@ -92,7 +117,6 @@ function calc() {
         `;
     }
 
-    // Update Detail Komponen & BEP
     const bepPct = Math.min((bep / totalPorsi) * 100, 100) || 0;
     const barColor = margin >= 50 ? "#16a34a" : margin >= 30 ? "#d97706" : "#dc2626";
 
@@ -116,7 +140,6 @@ function calc() {
         `;
     }
 
-    // Update Verdict Box
     let verdict = "", vclass = "", vstatus = "";
     if (margin >= 50) {
         verdict = `Sangat Sehat! Margin keuntungan mencapai ${pct(margin)}. Jika semua porsi habis terjual, kami mengantongi untung bersih sebesar ${fmt(totalUntung)}.`;
@@ -150,13 +173,137 @@ function calc() {
         `;
     }
 }
-// ====================================================
-// 4. AMANKAN EKSEKUSI AWAL SETELAH DOM SIAP
-// ====================================================
-window.addEventListener("DOMContentLoaded", () => {
-    renderBahan();
-    calc();
 
+// ==========================================================================
+// 4. REALTIME DATABASE LOGIC (FEEDBACK & TRANSAKSI)
+// ==========================================================================
+window.tambahFeedback = function(event) {
+    event.preventDefault();
+
+    const inputNama = document.getElementById("customer-name");
+    const inputPorsi = document.getElementById("portions-bought");
+    const inputReview = document.getElementById("customer-review");
+
+    const porsiDibeli = parseInt(inputPorsi.value) || 1;
+    const hargaJualSatuan = getHargaJualTerupdate();
+    const omsetTransaksi = porsiDibeli * hargaJualSatuan;
+
+    const dataBaru = {
+        nama: inputNama.value.trim() || "Anonim",
+        porsi: porsiDibeli,
+        review: inputReview.value.trim(),
+        omset: omsetTransaksi,
+        waktu: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+        timestamp: Date.now()
+    };
+
+    push(dbRefPenjualan, dataBaru)
+        .then(() => {
+            event.target.reset();
+        })
+        .catch((error) => {
+            console.error("Firebase Storage Error: ", error);
+        });
+}
+
+// Sinkronisasi data cloud ke UI dashboard secara Live-Time
+onValue(dbRefPenjualan, (snapshot) => {
+    let totalPelanggan = 0;
+    let totalPorsiTerjual = 0;
+    let totalOmset = 0;
+    let listFeedbackHTML = [];
+
+    if (snapshot.exists()) {
+        const dataMentah = snapshot.val();
+        const arrayData = Object.values(dataMentah).sort((a, b) => b.timestamp - a.timestamp);
+
+        arrayData.forEach(item => {
+            totalPelanggan += 1;
+            totalPorsiTerjual += item.porsi;
+            totalOmset += item.omset;
+
+            listFeedbackHTML.push(`
+                <div class="review-item-card" style="background: rgba(148, 163, 184, 0.04); border: 1px solid rgba(148, 163, 184, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                        <strong style="color: #10b981;">${item.nama} <span style="font-weight:400; color:var(--text-sub);">(${item.porsi} Porsi)</span></strong>
+                        <span style="color: var(--text-sub);">${item.waktu}</span>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-title); margin: 0; font-style: italic;">"${item.review}"</p>
+                </div>
+            `);
+        });
+    }
+
+    // Suntikkan hasil kalkulasi real-time ke card dashboard admin
+    const statPelanggan = document.getElementById("stat-pelanggan");
+    const statTerjual = document.getElementById("stat-terjual");
+    const statOmset = document.getElementById("stat-omset");
+    const container = document.getElementById("feedback-list-container");
+
+    if (statPelanggan) statPelanggan.innerText = totalPelanggan;
+    if (statTerjual) statTerjual.innerText = totalPorsiTerjual + " Porsi";
+    if (statOmset) statOmset.innerText = "Rp " + totalOmset.toLocaleString('id-ID');
+
+    if (container) {
+        if (listFeedbackHTML.length === 0) {
+            container.innerHTML = `<p style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 20px 0;">Belum ada feedback masuk.</p>`;
+        } else {
+            container.innerHTML = listFeedbackHTML.join('');
+        }
+    }
+});
+
+// ==========================================================================
+// 5. NAV CONTROLLER & CORE APPLICATION LOADERS
+// ==========================================================================
+window.switchTab = function(tabName) {
+    document.getElementById("tab-kalkulator-btn").classList.remove("active");
+    document.getElementById("tab-dashboard-btn").classList.remove("active");
+    
+    document.getElementById("content-kalkulator").classList.remove("active-content");
+    document.getElementById("content-dashboard").classList.remove("active-content");
+
+    if (tabName === 'kalkulator') {
+        document.getElementById("tab-kalkulator-btn").classList.add("active");
+        document.getElementById("content-kalkulator").classList.add("active-content");
+    } else if (tabName === 'dashboard') {
+        document.getElementById("tab-dashboard-btn").classList.add("active");
+        document.getElementById("content-dashboard").classList.add("active-content");
+    }
+}
+
+window.toggleRumus = function() {
+    const content = document.getElementById("rumus-content");
+    const arrow = document.getElementById("rumus-arrow-icon");
+    if (content && arrow) {
+        content.classList.toggle("show");
+        arrow.classList.toggle("rotate-arrow");
+    }
+}
+
+// Inisialisasi awal saat dokumen siap dimuat browser
+window.addEventListener("DOMContentLoaded", () => {
+    // Jalankan kalkulator dan render tabel bawaan kelompok
+    window.renderBahan();
+    window.calc();
+
+    // Jalankan pengecekan hak akses URL Parameter (?mode=pembeli)
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+
+    if (mode === 'pembeli') {
+        window.switchTab('dashboard');
+        const tabNav = document.querySelector(".tab-navigation");
+        if (tabNav) tabNav.style.display = "none";
+
+        const adminSection = document.querySelector(".right-column");
+        if (adminSection) adminSection.style.display = "none";
+
+        const title = document.querySelector(".section-title");
+        if (title) title.innerText = "✍️ Silakan Isi Kritik & Saran Spring Rolls Kami";
+    }
+
+    // Logika Tema Mode Gelap/Terang bawaan Greysen
     const themeToggleBtn = document.getElementById("theme-toggle");
     const currentTheme = localStorage.getItem("theme");
     
@@ -180,18 +327,3 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 }); 
-// ====================================================
-// FUNGSI KLIK LIHAT RUMUS (ACCORDION EFFECT)
-// ====================================================
-function toggleRumus() {
-    const content = document.getElementById("rumus-content");
-    const arrow = document.getElementById("rumus-arrow-icon");
-
-    if (content && arrow) {
-        // Toggle class 'show' untuk meluncurkan konten ke bawah
-        content.classList.toggle("show");
-        
-        // Toggle class 'rotate-arrow' untuk memutar panah kecil ke atas
-        arrow.classList.toggle("rotate-arrow");
-    }
-} 
