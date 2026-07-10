@@ -250,7 +250,7 @@ table input { width: 100%; color: var(--text-title); font-size: 14px; outline: n
 }
 
 /* Dashboard Forms & Items */
-#feedback-form textarea {
+#feedback-form textarea { 
     width: 100%; padding: 10px; border-radius: 8px;
     border: 1px solid var(--border-color); background: transparent;
     color: var(--text-title); font-family: inherit; font-size: 13px;

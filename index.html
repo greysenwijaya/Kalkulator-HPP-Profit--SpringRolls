@@ -22,10 +22,10 @@
         
         <div class="tab-navigation">
             <button type="button" id="tab-kalkulator-btn" class="tab-btn active" onclick="switchTab('kalkulator')">
-                🧮 Kalkulator HPP & Profit
+                Admin
             </button>
             <button type="button" id="tab-dashboard-btn" class="tab-btn" onclick="switchTab('dashboard')">
-                📊 Dashboard & Stand Mode
+                Dashboard & Stand Mode
             </button>
         </div>
 
@@ -176,7 +176,7 @@
                     </section>
 
                     <section class="card card-margin-top">
-                        <h2 class="section-title">💬 Riwayat Kritik & Saran</h2>
+                        <h2 class="section-title">Riwayat Kritik & Saran</h2>
                         <div id="feedback-list-container" class="feedback-scroll-container">
                             <p style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 20px 0;">Belum ada feedback masuk.</p>
                         </div>
@@ -195,6 +195,15 @@
         <p class="footer-subtext">// Kelompok 04 • Production Environment</p>
     </footer>
 
-    <script type="module" src="app.js"></script>
+   <script type="module">
+        import * as AppModule from './app.js';
+        // Memaksa browser mengenali fungsi modul ke dalam HTML global
+        window.calc = AppModule.calc;
+        window.addBahan = AppModule.addBahan;
+        window.delBahan = AppModule.delBahan;
+        window.tambahFeedback = AppModule.tambahFeedback;
+        window.switchTab = AppModule.switchTab;
+        window.toggleRumus = AppModule.toggleRumus;
+    </script>
 </body>
-</html> 
+</html>
